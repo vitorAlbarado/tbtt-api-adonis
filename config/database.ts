@@ -6,6 +6,7 @@
  */
 
 import Env from '@ioc:Adonis/Core/Env'
+
 import type { DatabaseConfig } from '@ioc:Adonis/Lucid/Database'
 
 const databaseConfig: DatabaseConfig = {
@@ -35,17 +36,10 @@ const databaseConfig: DatabaseConfig = {
     */
     mysql: {
       client: 'mysql2',
-      /*connection: {
+      connection: {
         host: Env.get('MYSQL_HOST'),
         port: Env.get('MYSQL_PORT'),
         user: Env.get('MYSQL_USER'),
-        password: Env.get('MYSQL_PASSWORD', ''),
-        database: Env.get('MYSQL_DB_NAME'),
-      } */
-      connection: {
-        host: 'tb',
-        port: 3306,
-        user: 'root',
         password: Env.get('MYSQL_PASSWORD', ''),
         database: Env.get('MYSQL_DB_NAME'),
       },
