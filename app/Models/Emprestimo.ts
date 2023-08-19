@@ -14,7 +14,7 @@ export default class Emprestimo extends BaseModel {
   public user: HasOne<typeof User>
 
   @column()
-  public date: DateTime
+  public date: Date
 
   @column()
   public livroId:number
