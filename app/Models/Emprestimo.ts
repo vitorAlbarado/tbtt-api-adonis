@@ -1,5 +1,6 @@
+import { BaseModel, belongsTo, BelongsTo, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime, DurationObjectUnits } from 'luxon'
-import { BaseModel, HasOne, column, hasOne } from '@ioc:Adonis/Lucid/Orm'
+
 import Livro from './Livro'
 import User from './User'
 
@@ -7,14 +8,18 @@ export default class Emprestimo extends BaseModel {
   @column({ isPrimary: true })
   public id: number
   
-  @hasOne(()=> Livro)
-  public livro: HasOne<typeof Livro>
+  @belongsTo(()=> User,{
+    localKey:'id'
+  })
+  public user: BelongsTo<typeof User>
 
-  @hasOne(()=> User)
-  public user: HasOne<typeof User>
+  @belongsTo(()=> Livro,{
+    localKey:'id'
+  })
+  public livro: BelongsTo<typeof Livro>
 
-  @column()
-  public date: Date
+  @column.dateTime({autoCreate:true})
+  public date: DateTime
 
   @column()
   public livroId:number

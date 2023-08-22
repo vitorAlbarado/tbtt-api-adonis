@@ -2,6 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Emprestimo from 'App/Models/Emprestimo'
 import Livro from 'App/Models/Livro'
 import User from 'App/Models/User'
+import { DateTime } from 'luxon'
 
 export default class EmprestimosController {
     public async store({request,response}:HttpContextContract){
@@ -17,6 +18,9 @@ export default class EmprestimosController {
         const alunoP = await Emprestimo.query().where('user_id',data.userId).andWhere('status','a') 
         if(alunoP.length > 0) return response.status(400).send("Aluno com empréstimo atrasado!")
 
+        const aluno = await User.findOrFail(data.userId);
+        const livro = await Livro.findOrFail(data.livroId)
+        
         const emprestimo = await Emprestimo.create(data)
 
         response.status(201)
@@ -25,10 +29,10 @@ export default class EmprestimosController {
         }
     }
     public async index({}:HttpContextContract){
-        const emprestimos =  await Emprestimo.all()
-        this.verificaData(emprestimos)
+        const emprestimos =  await Emprestimo.query().preload('user').preload('livro')
+        
         return{
-            data:this.verificaData(emprestimos)
+            emprestimos:this.verificaData(emprestimos)
         }
     }
     public async show({params}:HttpContextContract){
@@ -64,14 +68,14 @@ export default class EmprestimosController {
         }
     }
     verificaData(emprestimos:Emprestimo[]) {
-        const dataAtual = new Date();
+        const dataAtual = DateTime.now()
         emprestimos.forEach(e =>{
-            const dataEmprestimo = new Date(e.date)
-            const dataDevolucao = new Date(dataEmprestimo.getTime() + e.prazo * 86400000);
-              if(dataDevolucao<dataAtual && e.status != 'a' && e.ativo){
+            const dataEmprestimo = e.date
+            const dataDevolucao = dataEmprestimo.plus({days:e.prazo})
+            if(dataDevolucao<dataAtual && e.status != 'a' && e.ativo){
                 e.status = 'a'
-                 e.save()
-              }
+                e.save()
+            }
         })
         return emprestimos
     } 

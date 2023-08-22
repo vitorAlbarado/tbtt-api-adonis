@@ -2,18 +2,22 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 
 export default class UsersController {
-  public async index({}: HttpContextContract) {
-    const users = await User.all()
-    return{
-      data:users
-    }
-  }
+  
 
   public async store({request, response}: HttpContextContract) {
     const data = request.body()
+    console.log(data)
     const users = await User.create(data);
+    console.log(users)
+
     return {
       message:'Aluno cadastrado com sucesso!',
+      response:response.created(users)
+    }
+  }
+  public async index({}: HttpContextContract) {
+    const users = await User.query().preload('emprestimo')
+    return{
       data:users
     }
   }

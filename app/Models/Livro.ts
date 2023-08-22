@@ -1,9 +1,16 @@
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
+import Emprestimo from './Emprestimo'
 
 export default class Livro extends BaseModel {
   @column({ isPrimary: true })
   public id: number
+
+  @column({columnName:'emprestimos_id'})
+  public emprestimoId:number
+
+  @belongsTo(()=>Emprestimo,{foreignKey:'emprestimosId'})
+  public emprestimo: BelongsTo<typeof Emprestimo>
 
   @column()
   public titulo: String

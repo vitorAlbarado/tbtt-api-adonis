@@ -1,10 +1,15 @@
+import { BaseModel, column, hasMany, HasMany } from '@ioc:Adonis/Lucid/Orm'
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+
+import Emprestimo from './Emprestimo'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
   public id: number
   
+  
+  @hasMany(()=>Emprestimo,{foreignKey:'userId'})
+  public emprestimo: HasMany<typeof Emprestimo>
 
   @column()
   public nome: string

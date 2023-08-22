@@ -11,7 +11,7 @@ export default class LivrosController {
     }
 
     public async store({request, response}:HttpContextContract){
-        const data = request.body()
+        const data = request.only(['titulo','autor','genero','descricao','image'])
         const image = request.file('image',this.validationOptions)
         if(image){
             const imageName = `${uuid4()}.${image.extname}`
@@ -20,14 +20,14 @@ export default class LivrosController {
             })
             data.image = imageName
         }
-        const livro = await Livro.create(data);
+        const livro = await Livro.create(data)
         return {
             message:"Livro cadastrado com sucesso!",
-            data: livro
+            data
         }
     }
     public async index({ }:HttpContextContract){
-        const livros = await Livro.all()
+        const livros = await Livro.query()
         return{
             data: livros
         }
