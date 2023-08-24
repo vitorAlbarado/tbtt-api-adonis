@@ -22,20 +22,55 @@ export default class LivrosController {
         }
         const livro = await Livro.create(data)
         return {
-            message:"Livro cadastrado com sucesso!",
+            response:response.status(201),
             data
         }
     }
-    public async index({ }:HttpContextContract){
-        const livros = await Livro.query()
+    public async index({request}:HttpContextContract){
+        const page = request.qs().page
+        const pageSize = request.qs().pageSize
+        const orderBy = request.qs().orderBy
+        const livros =  await Livro.query().orderBy(orderBy,'asc').paginate(page, pageSize)
         return{
-            data: livros
+            livros
         }
     }
-    public async show ({params}:HttpContextContract){
-        const livro = await Livro.findOrFail(params.id)
+    public async show ({params, response}:HttpContextContract){
+        const livro = await Livro.find(params.id)
+        if(livro == null) return response.status(404).send('Livro não encontrado')
         return{
-            data: livro
+            livro
+        }
+    }
+    
+    public async findByTitulo({request,response}:HttpContextContract){
+        const titulo = request.qs().titulo
+        console.log(titulo)
+        const livro = await Livro.query().where('titulo','like',`${titulo}%`)
+        if(livro.length == 0){
+            return response.status(404).send('Livro não encontrado')
+        }
+        return{
+            livro
+        }
+    }
+    public async findByGenero({request,response}:HttpContextContract){
+        const genero = request.qs().genero
+        const livro = await Livro.query().where('genero','like',`${genero}%`).limit(10)
+        if(livro.length == 0){
+            return response.status(404).send('Genero não encontrado')
+        }
+        return{
+            livro
+        }
+    }
+    public async listaLivros({response}:HttpContextContract){
+        const livros = await Livro.all()
+        if(livros.length == 0){
+            return response.status(404).send('Livros não encontrados')
+        }
+        return{
+            livros
         }
     }
     public async destroy ({params}:HttpContextContract){

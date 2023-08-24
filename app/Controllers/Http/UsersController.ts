@@ -22,10 +22,11 @@ export default class UsersController {
     }
   }
 
-  public async show({params}: HttpContextContract) {
-    const user = await User.findOrFail(params.id)
+  public async show({params,response}: HttpContextContract) {
+    const aluno = await User.find(params.id)
+    if(aluno == null) return response.status(404).send('Aluno não encontrado')
     return{
-      data:user
+      aluno
     }
   }
 
